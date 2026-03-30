@@ -2,53 +2,52 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  let supabaseResponse = NextResponse.next({ request });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Do not run middleware between code exchange
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get('code');
-  if (code) {
+  if (!supabaseUrl || !supabaseAnonKey) {
     return supabaseResponse;
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        supabaseResponse = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          supabaseResponse.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    request.nextUrl.pathname !== '/' &&
-    request.nextUrl.pathname !== '/404'
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/auth';
-    return NextResponse.redirect(url);
+  // Skip auth check for the OAuth callback route to prevent interference with code exchange
+  if (request.nextUrl.pathname.startsWith('/auth/callback')) {
+    return supabaseResponse;
+  }
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (
+      !user &&
+      !request.nextUrl.pathname.startsWith('/auth') &&
+      request.nextUrl.pathname !== '/' &&
+      request.nextUrl.pathname !== '/404'
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/auth';
+      return NextResponse.redirect(url);
+    }
+  } catch {
+    // getUser can fail if tokens are invalid/expired — allow through, client will handle
   }
 
   return supabaseResponse;
@@ -56,14 +55,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public files (manifest, service worker, etc.)
-     * - api routes (handled separately)
-     */
     '/((?!_next/static|_next/image|favicon.ico|manifest.json|service-worker.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

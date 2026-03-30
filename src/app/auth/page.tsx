@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { Brain, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Button } from '@/components/shared/Button';
@@ -27,20 +26,27 @@ export default function AuthPage() {
     }
   }, [user, router]);
 
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+    const { error } = await signInWithGoogle();
+    if (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    if (mode === 'signup') {
-      const { error } = await signUp(email, password, fullName);
-      if (error) setError(error);
-      else router.push('/dashboard');
-    } else {
-      const { error } = await signIn(email, password);
-      if (error) setError(error);
-      else router.push('/dashboard');
-    }
+    const { error } = mode === 'signup'
+      ? await signUp(email, password, fullName)
+      : await signIn(email, password);
+
+    if (error) setError(error);
+    else router.push('/dashboard');
     setLoading(false);
   };
 
@@ -109,8 +115,9 @@ export default function AuthPage() {
 
           {/* Google OAuth */}
           <button
-            onClick={signInWithGoogle}
-            className="w-full flex items-center justify-center gap-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white hover:bg-gray-700 transition-colors mb-6"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white hover:bg-gray-700 transition-colors mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
