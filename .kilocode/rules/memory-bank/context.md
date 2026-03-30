@@ -47,12 +47,13 @@ MemorAI is a full-stack AI-powered personal memory assistant built on Next.js 16
 - [x] TypeScript type checking passes
 - [x] ESLint passes with zero errors
 - [x] Production build succeeds
-- [x] Fixed signup "Failed to fetch" error - added env validation to Supabase client
-- [x] Added try/catch error handling to all auth store functions (signUp, signIn, signInWithGoogle, signOut)
-- [x] Created /auth/callback route for Google OAuth PKCE code exchange
-- [x] Added middleware.ts for Supabase session management and route protection
+- [x] Fixed signup "Failed to fetch" error - Proxy-based lazy Supabase client prevents SSR prerender crashes
+- [x] Comprehensive error handling across all auth store functions (try/catch, error return types)
+- [x] Created /auth/callback route for Google OAuth PKCE code exchange with structured error logging
+- [x] Added middleware.ts for Supabase session refresh, route protection, and env var guard
 - [x] Created supabaseServer.ts for server-side Supabase client with cookie handling
 - [x] Installed @supabase/ssr package
+- [x] Auth page surfaces Google sign-in errors, disables button during loading
 
 ## File Structure
 
@@ -86,3 +87,4 @@ src/
 |------|---------|
 | Initial | Built complete MemorAI application from PRD |
 | 2026-03-30 | Fixed signup "Failed to fetch" and Google OAuth login issues |
+| 2026-03-30 | Production-grade auth: lazy client, comprehensive error handling, OAuth callback |
