@@ -54,6 +54,7 @@ MemorAI is a full-stack AI-powered personal memory assistant built on Next.js 16
 - [x] Created supabaseServer.ts for server-side Supabase client with cookie handling
 - [x] Installed @supabase/ssr package
 - [x] Auth page surfaces Google sign-in errors, disables button during loading
+- [x] Migrated middleware.ts to proxy.ts (Next.js 16 convention)
 
 ## File Structure
 
@@ -66,7 +67,7 @@ src/
 │   ├── onboarding/, dashboard/, chat/, reminders/
 │   ├── lists/, lists/[id]/, calendar/, memory/, email/
 │   └── settings/, 404/
-├── middleware.ts (Supabase session refresh + route protection)
+├── proxy.ts (Supabase session refresh + route protection)
 ├── lib/ (supabaseClient, supabaseServer, gemini, groqClient, googleCalendar, gmailClient, resend, webPush, vectorSearch)
 ├── store/ (useAuthStore, useChatStore, useReminderStore, useListStore, useMemoryStore, useSettingsStore)
 ├── hooks/ (useVoiceInput, useNotifications)
@@ -88,3 +89,4 @@ src/
 | Initial | Built complete MemorAI application from PRD |
 | 2026-03-30 | Fixed signup "Failed to fetch" and Google OAuth login issues |
 | 2026-03-30 | Production-grade auth: lazy client, comprehensive error handling, OAuth callback |
+| 2026-03-30 | Migrated middleware.ts to proxy.ts (Next.js 16 convention) |
