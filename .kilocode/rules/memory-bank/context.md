@@ -47,6 +47,12 @@ MemorAI is a full-stack AI-powered personal memory assistant built on Next.js 16
 - [x] TypeScript type checking passes
 - [x] ESLint passes with zero errors
 - [x] Production build succeeds
+- [x] Fixed signup "Failed to fetch" error - added env validation to Supabase client
+- [x] Added try/catch error handling to all auth store functions (signUp, signIn, signInWithGoogle, signOut)
+- [x] Created /auth/callback route for Google OAuth PKCE code exchange
+- [x] Added middleware.ts for Supabase session management and route protection
+- [x] Created supabaseServer.ts for server-side Supabase client with cookie handling
+- [x] Installed @supabase/ssr package
 
 ## File Structure
 
@@ -55,10 +61,12 @@ src/
 ├── app/
 │   ├── layout.tsx, page.tsx, providers.tsx, globals.css
 │   ├── api/chat/route.ts (Gemini intent pipeline)
-│   ├── auth/, onboarding/, dashboard/, chat/, reminders/
+│   ├── auth/, auth/callback/ (OAuth callback route)
+│   ├── onboarding/, dashboard/, chat/, reminders/
 │   ├── lists/, lists/[id]/, calendar/, memory/, email/
 │   └── settings/, 404/
-├── lib/ (supabaseClient, gemini, groqClient, googleCalendar, gmailClient, resend, webPush, vectorSearch)
+├── middleware.ts (Supabase session refresh + route protection)
+├── lib/ (supabaseClient, supabaseServer, gemini, groqClient, googleCalendar, gmailClient, resend, webPush, vectorSearch)
 ├── store/ (useAuthStore, useChatStore, useReminderStore, useListStore, useMemoryStore, useSettingsStore)
 ├── hooks/ (useVoiceInput, useNotifications)
 └── components/ (layout, chat, reminders, lists, calendar, memory, email, shared, onboarding)
@@ -77,3 +85,4 @@ src/
 | Date | Changes |
 |------|---------|
 | Initial | Built complete MemorAI application from PRD |
+| 2026-03-30 | Fixed signup "Failed to fetch" and Google OAuth login issues |
