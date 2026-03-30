@@ -57,6 +57,7 @@ MemorAI is a full-stack AI-powered personal memory assistant built on Next.js 16
 - [x] Migrated middleware.ts to proxy.ts (Next.js 16 convention)
 - [x] Created SETUP_GUIDE.md — 11-step free setup guide for all services
 - [x] Created .env.example template with documented env vars
+- [x] Created comprehensive README.md (features, setup, architecture, deployment, troubleshooting)
 
 ## File Structure
 
@@ -99,3 +100,4 @@ Quick summary:
 | 2026-03-30 | Production-grade auth: lazy client, comprehensive error handling, OAuth callback |
 | 2026-03-30 | Migrated middleware.ts to proxy.ts (Next.js 16 convention) |
 | 2026-03-30 | Added SETUP_GUIDE.md and .env.example for free setup |
+| 2026-03-30 | Added comprehensive README.md with full setup and architecture docs |
