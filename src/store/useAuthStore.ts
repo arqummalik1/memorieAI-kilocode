@@ -55,34 +55,52 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   signUp: async (email, password, fullName) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) return { error: error.message };
-    if (data.user) {
-      await supabase.from('profiles').insert({
-        user_id: data.user.id,
-        full_name: fullName,
-      });
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if (error) return { error: error.message };
+      if (data.user) {
+        await supabase.from('profiles').insert({
+          user_id: data.user.id,
+          full_name: fullName,
+        });
+      }
+      return { error: null };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Sign up failed. Please check your connection and try again.';
+      return { error: message };
     }
-    return { error: null };
   },
 
   signIn: async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message || null };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      return { error: error?.message || null };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Sign in failed. Please check your connection and try again.';
+      return { error: message };
+    }
   },
 
   signInWithGoogle: async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        scopes: 'email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.modify',
-        redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined,
-      },
-    });
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          scopes: 'email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/gmail.modify',
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined,
+        },
+      });
+    } catch (err) {
+      console.error('Google sign in failed:', err);
+    }
   },
 
   signOut: async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Sign out failed:', err);
+    }
     set({ user: null, session: null, profile: null });
   },
 
