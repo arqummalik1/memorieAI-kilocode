@@ -1,23 +1,22 @@
-# Technical Context: Next.js Starter Template
+# Technical Context: MemorAI
 
 ## Technology Stack
 
-| Technology   | Version | Purpose                         |
-| ------------ | ------- | ------------------------------- |
-| Next.js      | 16.x    | React framework with App Router |
-| React        | 19.x    | UI library                      |
-| TypeScript   | 5.9.x   | Type-safe JavaScript            |
-| Tailwind CSS | 4.x     | Utility-first CSS               |
-| Bun          | Latest  | Package manager & runtime       |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Next.js | 16.x | React framework with App Router |
+| React | 19.x | UI library |
+| TypeScript | 5.9.x | Type-safe JavaScript |
+| Tailwind CSS | 4.x | Utility-first CSS |
+| Bun | Latest | Package manager & runtime |
+| Supabase | 2.x | DB, Auth, Storage, pgvector |
+| Zustand | 5.x | Client state management |
+| @dnd-kit | 6.x | Drag and drop |
+| react-big-calendar | 1.x | Calendar UI |
+| lucide-react | 1.x | Icons |
+| react-hot-toast | 2.x | Toast notifications |
 
-## Development Environment
-
-### Prerequisites
-
-- Bun installed (`curl -fsSL https://bun.sh/install | bash`)
-- Node.js 20+ (for compatibility)
-
-### Commands
+## Development Commands
 
 ```bash
 bun install        # Install dependencies
@@ -28,116 +27,43 @@ bun lint           # Run ESLint
 bun typecheck      # Run TypeScript type checking
 ```
 
-## Project Configuration
+## Environment Variables
 
-### Next.js Config (`next.config.ts`)
+```bash
+# Required for the app to function
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
-- App Router enabled
-- Default settings for flexibility
+# Required for AI features
+NEXT_PUBLIC_GEMINI_API_KEY=your-gemini-key
+NEXT_PUBLIC_GROQ_API_KEY=your-groq-key
 
-### TypeScript Config (`tsconfig.json`)
+# Required for Google integrations
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-- Strict mode enabled
-- Path alias: `@/*` → `src/*`
-- Target: ESNext
-
-### Tailwind CSS 4 (`postcss.config.mjs`)
-
-- Uses `@tailwindcss/postcss` plugin
-- CSS-first configuration (v4 style)
-
-### ESLint (`eslint.config.mjs`)
-
-- Uses `eslint-config-next`
-- Flat config format
-
-## Key Dependencies
-
-### Production Dependencies
-
-```json
-{
-  "next": "^16.1.3", // Framework
-  "react": "^19.2.3", // UI library
-  "react-dom": "^19.2.3" // React DOM
-}
+# Optional
+NEXT_PUBLIC_RESEND_API_KEY=your-resend-key
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-vapid-public-key
+VAPID_PRIVATE_KEY=your-vapid-private-key
 ```
 
-### Dev Dependencies
+## Database Schema
 
-```json
-{
-  "typescript": "^5.9.3",
-  "@types/node": "^24.10.2",
-  "@types/react": "^19.2.7",
-  "@types/react-dom": "^19.2.3",
-  "@tailwindcss/postcss": "^4.1.17",
-  "tailwindcss": "^4.1.17",
-  "eslint": "^9.39.1",
-  "eslint-config-next": "^16.0.0"
-}
-```
-
-## File Structure
-
-```
-/
-├── .gitignore              # Git ignore rules
-├── package.json            # Dependencies and scripts
-├── bun.lock                # Bun lockfile
-├── next.config.ts          # Next.js configuration
-├── tsconfig.json           # TypeScript configuration
-├── postcss.config.mjs      # PostCSS (Tailwind) config
-├── eslint.config.mjs       # ESLint configuration
-├── public/                 # Static assets
-│   └── .gitkeep
-└── src/                    # Source code
-    └── app/                # Next.js App Router
-        ├── layout.tsx      # Root layout
-        ├── page.tsx        # Home page
-        ├── globals.css     # Global styles
-        └── favicon.ico     # Site icon
-```
-
-## Technical Constraints
-
-### Starting Point
-
-- Minimal structure - expand as needed
-- No database by default (use recipe to add)
-- No authentication by default (add when needed)
-
-### Browser Support
-
-- Modern browsers (ES2020+)
-- No IE11 support
-
-## Performance Considerations
-
-### Image Optimization
-
-- Use Next.js `Image` component for optimization
-- Place images in `public/` directory
-
-### Bundle Size
-
-- Tree-shaking enabled by default
-- Tailwind CSS purges unused styles
-
-### Core Web Vitals
-
-- Server Components reduce client JavaScript
-- Streaming and Suspense for better UX
+Run `supabase-schema.sql` in the Supabase SQL Editor. Key tables:
+- `profiles` - User preferences, timezone, briefing settings
+- `reminders` - All reminders with recurrence, snooze, friend reminders
+- `lists` + `list_items` - Smart lists with drag-and-drop ordering
+- `memories` - Long-term memory with vector embeddings (pgvector)
+- `files` - File vault with AI summaries and embeddings
+- `chat_messages` - Chat history for context
+- `calendar_connections` + `email_connections` - OAuth tokens
+- `friend_reminders` - Reminders sent to others via email
+- `daily_briefings` - Log of generated daily briefings
 
 ## Deployment
 
-### Build Output
-
-- Server-rendered pages by default
-- Can be configured for static export
-
-### Environment Variables
-
-- None required for base template
-- Add as needed for features
-- Use `.env.local` for local development
+- Frontend: Vercel (free tier)
+- Backend: Supabase (free tier)
+- Edge Functions: Supabase Edge Functions for cron jobs
+- Push: Web Push API with VAPID keys

@@ -1,120 +1,82 @@
-# System Patterns: Next.js Starter Template
+# System Patterns: MemorAI
 
 ## Architecture Overview
 
 ```
 src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout + metadata
-│   ├── page.tsx            # Home page
-│   ├── globals.css         # Tailwind imports + global styles
-│   └── favicon.ico         # Site icon
-└── (expand as needed)
-    ├── components/         # React components (add when needed)
-    ├── lib/                # Utilities and helpers (add when needed)
-    └── db/                 # Database files (add via recipe)
+├── app/                          # Next.js App Router pages
+│   ├── layout.tsx                # Root layout + providers
+│   ├── providers.tsx             # Auth provider + toast + layout wrapper
+│   ├── page.tsx                  # Landing page
+│   ├── globals.css               # Global styles
+│   ├── api/chat/route.ts         # Chat API (Gemini intent pipeline)
+│   ├── auth/page.tsx             # Login/Signup
+│   ├── onboarding/page.tsx       # Setup wizard
+│   ├── dashboard/page.tsx        # Home dashboard
+│   ├── chat/page.tsx             # AI chat
+│   ├── reminders/page.tsx        # Reminders management
+│   ├── lists/page.tsx            # Lists grid
+│   ├── lists/[id]/page.tsx       # List detail
+│   ├── calendar/page.tsx         # Calendar view
+│   ├── memory/page.tsx           # File vault
+│   ├── email/page.tsx            # Gmail integration
+│   ├── settings/page.tsx         # Settings
+│   └── 404/page.tsx              # 404 page
+├── lib/                          # Utility libraries
+│   ├── supabaseClient.ts         # Supabase init (lazy)
+│   ├── gemini.ts                 # Gemini API wrapper
+│   ├── groqClient.ts             # Groq Whisper wrapper
+│   ├── googleCalendar.ts         # Google Calendar helpers
+│   ├── gmailClient.ts            # Gmail API helpers
+│   ├── resend.ts                 # Resend email helper
+│   ├── webPush.ts                # Push notification helper
+│   └── vectorSearch.ts           # pgvector semantic search
+├── store/                        # Zustand stores
+│   ├── useAuthStore.ts           # Auth + profile state
+│   ├── useChatStore.ts           # Chat messages + realtime
+│   ├── useReminderStore.ts       # Reminders CRUD
+│   ├── useListStore.ts           # Lists + items CRUD
+│   ├── useMemoryStore.ts         # Memories + files
+│   └── useSettingsStore.ts       # UI settings (sidebar)
+├── hooks/                        # Custom hooks
+│   ├── useVoiceInput.ts          # Mic + transcription
+│   └── useNotifications.ts       # Push subscription
+├── components/                   # React components
+│   ├── layout/                   # AppLayout, Sidebar, MobileNav
+│   ├── chat/                     # ChatWindow, ChatMessage, ChatInput, etc.
+│   ├── reminders/                # ReminderCard, ReminderForm, ReminderList
+│   ├── lists/                    # ListCard, ListItemRow, DraggableList, ListManager
+│   ├── calendar/                 # CalendarView, EventModal
+│   ├── memory/                   # FileCard, FileUploader, SemanticSearchBar
+│   ├── email/                    # EmailList
+│   ├── onboarding/               # StepName, StepTimezone, etc.
+│   └── shared/                   # Button, Modal, Badge, Skeleton, etc.
 ```
 
 ## Key Design Patterns
 
-### 1. App Router Pattern
+### 1. Client Components by Default
+Most components use `"use client"` since the app is heavily interactive. Server Components are used only for the root layout and the API route.
 
-Uses Next.js App Router with file-based routing:
-```
-src/app/
-├── page.tsx           # Route: /
-├── about/page.tsx     # Route: /about
-├── blog/
-│   ├── page.tsx       # Route: /blog
-│   └── [slug]/page.tsx # Route: /blog/:slug
-└── api/
-    └── route.ts       # API Route: /api
-```
+### 2. Zustand for State
+All state management uses Zustand stores. Each domain (auth, chat, reminders, lists, memories) has its own store with CRUD operations that call Supabase directly.
 
-### 2. Component Organization Pattern (When Expanding)
+### 3. AI Intent Pipeline
+The chat page sends messages to `/api/chat` which:
+1. Calls Gemini 2.0 Flash with a system prompt defining the JSON schema
+2. Parses the JSON response for intent + entities + reply
+3. Executes the action (DB insert/update/delete via Supabase)
+4. Returns the AI reply to the client
 
-```
-src/components/
-├── ui/                # Reusable UI components (Button, Card, etc.)
-├── layout/            # Layout components (Header, Footer)
-├── sections/          # Page sections (Hero, Features, etc.)
-└── forms/             # Form components
-```
+### 4. Protected Routes Pattern
+Each page checks `useAuthStore` and redirects to `/auth` if not logged in. The `AppLayout` component conditionally renders sidebar/nav based on auth state.
 
-### 3. Server Components by Default
-
-All components are Server Components unless marked with `"use client"`:
-```tsx
-// Server Component (default) - can fetch data, access DB
-export default function Page() {
-  return <div>Server rendered</div>;
-}
-
-// Client Component - for interactivity
-"use client";
-export default function Counter() {
-  const [count, setCount] = useState(0);
-  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
-}
-```
-
-### 4. Layout Pattern
-
-Layouts wrap pages and can be nested:
-```tsx
-// src/app/layout.tsx - Root layout
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
-}
-
-// src/app/dashboard/layout.tsx - Nested layout
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex">
-      <Sidebar />
-      <main>{children}</main>
-    </div>
-  );
-}
-```
+### 5. Dark Theme
+Consistent dark theme with violet-600 as primary accent. Gray-950 background, gray-800/50 for cards, gray-700 for borders.
 
 ## Styling Conventions
 
-### Tailwind CSS Usage
-- Utility classes directly on elements
-- Component composition for repeated patterns
-- Responsive: `sm:`, `md:`, `lg:`, `xl:`
-
-### Common Patterns
-```tsx
-// Container
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-// Responsive grid
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-// Flexbox centering
-<div className="flex items-center justify-center">
-```
-
-## File Naming Conventions
-
-- Components: PascalCase (`Button.tsx`, `Header.tsx`)
-- Utilities: camelCase (`utils.ts`, `helpers.ts`)
-- Pages/Routes: lowercase (`page.tsx`, `layout.tsx`)
-- Directories: kebab-case (`api-routes/`) or lowercase (`components/`)
-
-## State Management
-
-For simple needs:
-- `useState` for local component state
-- `useContext` for shared state
-- Server Components for data fetching
-
-For complex needs (add when necessary):
-- Zustand for client state
-- React Query for server state
+- Tailwind CSS utility classes
+- Component-level styling (no CSS modules)
+- Responsive: `sm:`, `md:`, `lg:` breakpoints
+- Color palette: violet-600 (primary), gray-800/900/950 (dark), white/gray-300 (text)

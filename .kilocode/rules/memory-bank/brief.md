@@ -1,48 +1,53 @@
-# Project Brief: Next.js Starter Template
+# Project Brief: MemorAI
 
 ## Purpose
 
-This is a minimal Next.js starter template designed for AI-assisted development. It provides a clean foundation that can be extended to build any type of web application through interaction with an AI assistant.
+MemorAI is an AI-powered personal memory assistant — a full-featured productivity app that lets users manage reminders, lists, calendar events, files, and memories through a single chat-based interface. It's a clone of Memorae.ai built on a 100% free tech stack.
 
 ## Target Users
 
-- Developers wanting a clean Next.js starting point
-- Users building applications through AI-assisted coding
-- Teams needing a standardized, modern Next.js setup
+- Busy individuals who want to manage tasks, reminders, and memory without switching apps
+- People who prefer natural language interaction over traditional UI
+- Users who want AI-powered organization and retrieval
 
 ## Core Use Case
 
-Users describe what they want to build to an AI assistant, which then expands this template by:
-
-1. Adding components and pages as needed
-2. Installing additional dependencies
-3. Setting up databases, authentication, etc. using recipes
-4. Customizing styling and branding
+Users interact with MemorAI primarily through a chat interface:
+1. Type or speak naturally ("Remind me to call mom tomorrow at 6pm")
+2. AI parses intent and extracts entities
+3. Actions are executed (reminders set, lists created, calendar updated)
+4. Everything is searchable via semantic vector search
 
 ## Key Requirements
 
 ### Must Have
+- Chat-based natural language UI (core interaction model)
+- AI intent parsing via Google Gemini 2.0 Flash
+- Reminders with recurrence, snooze, friend reminders
+- Smart lists with drag-and-drop reordering
+- Google Calendar integration
+- Gmail integration with AI classification
+- File vault with AI-powered semantic search
+- Voice input via Groq Whisper
+- Image analysis via Gemini Vision
+- Push notifications via Web Push API
+- Daily briefing generation
+- PWA support for mobile
 
-- Modern Next.js 16 setup with App Router
-- TypeScript for type safety
+### Tech Stack
+- Next.js 16 + React 19 + TypeScript (strict mode)
 - Tailwind CSS 4 for styling
-- ESLint for code quality
-- Clean, minimal starting structure
-- Bun as package manager
-
-### Nice to Have
-
-- Recipe system for common additions (database, auth)
-- Memory bank for AI context persistence
-- Clear development guidelines
-
-## Success Metrics
-
-- Clean, zero-error TypeScript setup
-- Passing lint and type checks
+- Supabase (DB, Auth, Storage, pgvector)
+- Google Gemini 2.0 Flash for AI
+- Groq Whisper for voice transcription
+- Zustand for state management
+- @dnd-kit for drag and drop
+- react-big-calendar for calendar UI
+- lucide-react for icons
 
 ## Constraints
 
-- Minimal dependencies by default
-- Framework: Next.js 16 + React 19 + Tailwind CSS 4
-- Package manager: Bun
+- Entire stack must be free tier
+- Dark theme with violet/purple accents
+- Mobile-first responsive design
+- PWA-capable (installable on mobile)
