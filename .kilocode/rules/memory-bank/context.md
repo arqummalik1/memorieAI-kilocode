@@ -55,6 +55,8 @@ MemorAI is a full-stack AI-powered personal memory assistant built on Next.js 16
 - [x] Installed @supabase/ssr package
 - [x] Auth page surfaces Google sign-in errors, disables button during loading
 - [x] Migrated middleware.ts to proxy.ts (Next.js 16 convention)
+- [x] Created SETUP_GUIDE.md — 11-step free setup guide for all services
+- [x] Created .env.example template with documented env vars
 
 ## File Structure
 
@@ -76,11 +78,17 @@ src/
 
 ## Next Steps
 
-1. Set up Supabase project and run `supabase-schema.sql`
-2. Configure environment variables in `.env.local`
-3. Set up Google OAuth provider in Supabase
-4. Enable pgvector extension in Supabase
-5. Deploy to Vercel
+See `SETUP_GUIDE.md` for the complete step-by-step free setup process.
+
+Quick summary:
+1. Create Supabase project → get URL + anon key
+2. Set up Google Cloud OAuth → get Client ID + Secret
+3. Configure Google provider in Supabase dashboard
+4. Get Gemini API key from Google AI Studio
+5. Get Groq API key from console.groq.com
+6. Copy `.env.example` to `.env.local` and fill in values
+7. Run `supabase-schema.sql` in Supabase SQL Editor
+8. Deploy to Vercel (free)
 
 ## Session History
 
@@ -90,3 +98,4 @@ src/
 | 2026-03-30 | Fixed signup "Failed to fetch" and Google OAuth login issues |
 | 2026-03-30 | Production-grade auth: lazy client, comprehensive error handling, OAuth callback |
 | 2026-03-30 | Migrated middleware.ts to proxy.ts (Next.js 16 convention) |
+| 2026-03-30 | Added SETUP_GUIDE.md and .env.example for free setup |
